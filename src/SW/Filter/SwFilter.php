@@ -9,7 +9,7 @@
 
 namespace SzwSuny\SW\Filter;
 
-use SzwSuny\SW\Filter\Kmp;
+use SzwSuny\SW\Filter\Dfa;
 
 class SwFilter
 {
@@ -18,7 +18,7 @@ class SwFilter
      * @brief 默认使用的域
      */
     private $scopeName = 'default';
-    private $wordsNext = [];
+    private $words = [];
 
     public function setScope(string $scope)
     {
@@ -31,16 +31,11 @@ class SwFilter
      *
      * @param $word 词汇
      *
-     * @return bool 
+     * @return void 
      */
-    public function add(string $word):bool
+    public function add(string $word)
     {
-        $kmp = new Kmp();
-        $next = $kmp->getNext($word);
-
-        $this->wordsNext[] = ['word'=>$word,'next'=>$next];
-
-        return true;
+        $this->words[] = $word;
     }
 
     /**
@@ -52,10 +47,7 @@ class SwFilter
      */
     public function adds(array $words)
     {
-        foreach($words as $word)
-        {
-            $this->add($word);
-        }
+        $this->words = array_merge($this->words,$words);
     }
 
 
@@ -66,8 +58,10 @@ class SwFilter
      */
     public function save():bool
     {
+        $dfa = new Dfa();
+        $tree = $dfa->getTree($this->words);
         $filePath = $this->getFilePath();
-        $write = json_encode($this->wordsNext);
+        $write = serialize($tree);
 
         $result = file_put_contents($filePath,$write);
 
@@ -90,7 +84,7 @@ class SwFilter
      *
      * @return array
      */
-    protected function getWordsNext():array
+    protected function getTree():array
     {
         $filterPath = $this->getFilePath();
 
@@ -100,39 +94,7 @@ class SwFilter
         }
 
         $read = file_get_contents($filterPath);
-        $result = json_decode($read,true);
-
-        return $result;
-    }
-
-    /**
-     * @brief 是否存在敏感词
-     *
-     * @param $content 要检查的内容,这个遇到匹配则会停止并返回结果，所以如果不需要详细信息就用这个
-     *
-     * @return bool
-     */
-    public function isExists(string $content):bool
-    {
-        $wordsNext = $this->getWordsNext();
-
-        if(empty($wordsNext))
-        {
-            return false;
-        }
-
-        $kmp = new Kmp();
-
-        $result = false;
-        foreach($wordsNext as $words)
-        {
-            if(!empty($kmp->match($words['word'],$words['next'],$content)))
-            {
-                var_dump($words['word']);
-                $result = true;
-                break;
-            }
-        }
+        $result = unserialize($read);
 
         return $result;
     }
@@ -141,32 +103,15 @@ class SwFilter
      * @brief 获得所有匹配的关键词
      *
      * @param $content 内容
-     * @param $isLocation 是否带有位置信息
      *
      * @return array
      */
-    public function getMatchWords(string $content,bool $isLocation = false):array
+    public function getMatchWords(string $content):array
     {
-        $wordsNext = $this->getWordsNext();
-        $kmp = new Kmp();
+        $tree = $this->getTree();
 
-        $result = [];
-        foreach($wordsNext as $words)
-        {
-            $match = $kmp->match($words['word'],$words['next'],$content);
-            if(empty($match))
-            {
-                continue;
-            }
-
-            if($isLocation === false)
-            {
-                $result[] = $words['word'];
-            } else
-            {
-                $result[] = $match;
-            }
-        }
+        $dfa = new Dfa();
+        $result =$dfa->search($content,$tree);
 
         return $result;
     }
