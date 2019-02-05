@@ -9,7 +9,7 @@
 
 namespace SzwSuny\SW\Filter;
 
-use SzwSuny\SW\Filter\Dfa;
+use SzwSuny\SW\Filter\AcDfa;
 
 class SwFilter
 {
@@ -58,8 +58,9 @@ class SwFilter
      */
     public function save():bool
     {
-        $dfa = new Dfa();
-        $tree = $dfa->getTree($this->words);
+         // $dfa = new Dfa();
+        $acDfa = new AcDfa();
+        $tree = $acDfa->getTree($this->words);
         $filePath = $this->getFilePath();
         $write = serialize($tree);
 
@@ -110,7 +111,7 @@ class SwFilter
     {
         $tree = $this->getTree();
 
-        $dfa = new Dfa();
+        $dfa = new AcDfa();
         $result =$dfa->search($content,$tree);
 
         return $result;
