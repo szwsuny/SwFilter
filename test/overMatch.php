@@ -1,24 +1,20 @@
 <?php
 /**
-* @file add.php
-* @brief 添加词汇
+* @file overMatch.php
+* @brief 重叠匹配
 * @author sunzhiwei
-* @version 1.1
-* @date 2019-02-01
+* @version 1.1.5
+* @date 2019-02-05
  */
+
 
 require __DIR__ . '/../vendor/autoload.php';
 
 use SzwSuny\SW\Filter\SwFilter;
 
-$words = ['孙志伟','志伟'];
-
 $swFilter = new SwFilter();
-
 $swFilter->setScope('短信类');
 
-$swFilter->adds($words);
+$result = $swFilter->getOverMatch('孙志伟');
 
-$swFilter->save();
-
-var_dump(count($words));
+var_dump($result);

@@ -14,6 +14,6 @@ use SzwSuny\SW\Filter\SwFilter;
 $swFilter = new SwFilter();
 $swFilter->setScope('短信类');
 
-$result = $swFilter->getMatchWords('孙志向天上伟大');
+$result = $swFilter->getMatchWords('孙志伟');
 
 var_dump($result);

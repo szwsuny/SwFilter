@@ -114,9 +114,27 @@ class SwFilter
         $dfa = new AcDfa();
         $result =$dfa->search($content,$tree);
 
+        $result = array_keys(array_flip($result));
         return $result;
     }
 
+    /**
+        * @brief 重叠词匹配
+        *
+        * @param $content
+        *
+        * @return array
+     */
+    public function getOverMatch(string $content):array
+    {
+        $tree = $this->getTree();
+
+        $dfa = new AcDfa();
+        $result = $dfa->searchOver($content,$tree);
+
+        $result = array_keys(array_flip($result));
+        return $result;
+    }
     
     /**
         * @brief 过滤掉敏感词 

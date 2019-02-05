@@ -69,5 +69,8 @@ Sensitive Word Filtering
     2019年02月05日 1.1.4
         又修复了一下bug
 
+    2019年02月05日 1.1.5
+        新增一个函数，解决长词中包含短词的匹配不到问题，正在考虑是否转为正式使用。使用请看overMatch.php
+
 sunzhiwei
 2019-2-1

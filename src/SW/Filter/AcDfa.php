@@ -73,6 +73,53 @@ class AcDfa
         return $result;
     }
 
+    public function searchOver(string $content,array $tree):array
+    {
+        $len = mb_strlen($content);
+
+        $result = [];
+
+        for($i = 0; $i < $len; $i++)
+        {
+            $char = mb_substr($content,$i,1);
+            if(isset($tree[$char]))
+            {
+                $nWords = $this->overMatch($i,$len,$content,$tree);
+                if(!empty($nWords))
+                {
+                    $result[] = $nWords;
+                }
+            }
+        }
+
+
+        return $result;
+    }
+
+    protected function overMatch(int $index,int $len,string $content,array $tree):string
+    {
+        $result = '';
+        $nowTree = $tree;
+        for($i = $index; $i < $len; $i++)
+        {
+            $char = mb_substr($content,$i,1);
+            if(!isset($nowTree[$char]))
+            {
+                break;
+            }
+
+            if($nowTree[$char]['end'])
+            {
+                $result = $nowTree[$char]['word'];
+                break;
+            }
+
+            $nowTree = $nowTree[$char];
+        } 
+
+        return $result;
+    }
+
     protected function getFailTree(string $word,array $tree):array
     {
         if(empty($word))
