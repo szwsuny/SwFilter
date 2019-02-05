@@ -44,7 +44,7 @@ class AcDfa
         {
             $char = mb_substr($content,$i,1);
 
-            if(!isset($nowTree[$char]))
+            if(!isset($nowTree[$char])) //如果不存在则跳节点
             {
                 if(isset($nowTree['fail']))
                 {
@@ -52,6 +52,13 @@ class AcDfa
                 } else 
                 {
                     $nowTree = $tree;
+                }
+                
+                //如果还是不存在则退出
+                if(!isset($nowTree[$char]))
+                {
+                    $nowTree = $tree;
+                    continue;
                 }
             }
 
