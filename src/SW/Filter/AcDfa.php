@@ -9,6 +9,8 @@
 
 namespace SzwSuny\SW\Filter;
 
+use SzwSuny\SW\Filter\Config;
+
 class AcDfa
 {
     /**
@@ -36,13 +38,13 @@ class AcDfa
 
     public function search(string $content,array $tree):array
     {
-        $len = mb_strlen($content);
+        $len = mb_strlen($content,Config::WORDS_ENCODING);
         $nowTree = $tree;
 
         $result = [];
         for($i = 0; $i < $len; $i++)
         {
-            $char = mb_substr($content,$i,1);
+            $char = mb_substr($content,$i,1,Config::WORDS_ENCODING);
 
             if(!isset($nowTree[$char])) //如果不存在则跳节点
             {
@@ -75,13 +77,13 @@ class AcDfa
 
     public function searchOver(string $content,array $tree):array
     {
-        $len = mb_strlen($content);
+        $len = mb_strlen($content,Config::WORDS_ENCODING);
 
         $result = [];
 
         for($i = 0; $i < $len; $i++)
         {
-            $char = mb_substr($content,$i,1);
+            $char = mb_substr($content,$i,1,Config::WORDS_ENCODING);
             if(isset($tree[$char]))
             {
                 $nWords = $this->overMatch($i,$len,$content,$tree);
@@ -102,7 +104,7 @@ class AcDfa
         $nowTree = $tree;
         for($i = $index; $i < $len; $i++)
         {
-            $char = mb_substr($content,$i,1);
+            $char = mb_substr($content,$i,1,Config::WORDS_ENCODING);
             if(!isset($nowTree[$char]))
             {
                 break;
@@ -127,11 +129,11 @@ class AcDfa
             return $tree;
         }
 
-        $len = mb_strlen($word);
+        $len = mb_strlen($word,Config::WORDS_ENCODING);
         $result = $tree;
         for($i = 0; $i < $len; $i++)
         {
-            $char = mb_substr($word,$i,1);
+            $char = mb_substr($word,$i,1,Config::WORDS_ENCODING);
             if(!isset($result[$char]))
             {
                 $result = $tree;
@@ -184,11 +186,11 @@ class AcDfa
         $tree = [];
         foreach($words as $word)
         {
-            $len = mb_strlen($word);
+            $len = mb_strlen($word,Config::WORDS_ENCODING);
             $nowTree = &$tree;
             for($i = 0; $i < $len; $i++)
             {
-                $char = mb_substr($word,$i,1);
+                $char = mb_substr($word,$i,1,Config::WORDS_ENCODING);
                 if(isset($nowTree[$char]))
                 {
                     if($i == ($len - 1))
